@@ -24,11 +24,8 @@ VideoWindow::VideoWindow(QWidget *parent) : QWidget(parent)
 
     player = new QMediaPlayer(this);
     playlist = new QMediaPlaylist(this);
-    playlist->setPlaybackMode(QMediaPlaylist::Loop);
     player->setPlaylist(playlist);
     player->setVideoOutput(videowidget);
-
-    player->setMuted(true);
 }
 
 VideoWindow::~VideoWindow()

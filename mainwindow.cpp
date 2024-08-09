@@ -52,10 +52,10 @@ void MainWindow::GetConfig()
 {
     QSettings config("Settings.ini", QSettings::IniFormat);
 
-    ui->CB_mode->setCurrentIndex(config.value("mode").toInt());
-    ui->CB_fit->setCurrentIndex(config.value("fit").toInt());
+    ui->CB_mode->setCurrentIndex(config.value("mode", 2).toInt());
+    ui->CB_fit->setCurrentIndex(config.value("fit", 0).toInt());
 
-    if(config.value("mute").toBool())
+    if(config.value("mute", true).toBool())
     {
         videowindow->VideoMute();
         ui->PB_mute->setIcon(QIcon(":/icons/mute"));
@@ -66,7 +66,7 @@ void MainWindow::GetConfig()
         ui->PB_mute->setIcon(QIcon(":/icons/unmute"));
     }
 
-    ui->HS_volume->setValue(config.value("volume").toInt());
+    ui->HS_volume->setValue(config.value("volume", 0).toInt());
 
     // 读取路径到列表
     QStringList filepaths;
