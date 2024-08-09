@@ -15,7 +15,6 @@ VideoWindow::VideoWindow(QWidget *parent) : QWidget(parent)
     this->showFullScreen();
 
     videowidget = new QVideoWidget(this);
-    videowidget->setAspectRatioMode(Qt::IgnoreAspectRatio);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(videowidget);
@@ -137,15 +136,15 @@ void VideoWindow::SetVideoVolume(int volume)
     player->setVolume(volume*VolumeRatio);
 }
 
-void VideoWindow::SetPlaybackMode(PlaybackMode mode)
+void VideoWindow::SetPlaybackMode(VideoWindow::PlaybackMode mode)
 {
     switch(mode)
     {
-        case 0: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemOnce); break;
-        case 1: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop); break;
-        case 2: playlist->setPlaybackMode(QMediaPlaylist::Sequential); break;
-        case 3: playlist->setPlaybackMode(QMediaPlaylist::Loop); break;
-        case 4: playlist->setPlaybackMode(QMediaPlaylist::Random); break;
+        case CurrentItemOnce: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemOnce); break;
+        case CurrentItemInLoop: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop); break;
+        case Sequential: playlist->setPlaybackMode(QMediaPlaylist::Sequential); break;
+        case Loop: playlist->setPlaybackMode(QMediaPlaylist::Loop); break;
+        case Random: playlist->setPlaybackMode(QMediaPlaylist::Random); break;
     }
 }
 
@@ -153,8 +152,18 @@ void VideoWindow::SetPlaybackRate(float rate)
 {
     // 在设置前后暂停，减少闪烁。
     player->pause();
-    player->setPlaybackRate(rate);
+    player->setPlaybackRate(rate/PlaybackRateRatio);
     player->play();
+}
+
+void VideoWindow::SetAspectRatioMode(VideoWindow::AspectRatioMode mode)
+{
+    switch(mode)
+    {
+        case IgnoreAspectRatio: videowidget->setAspectRatioMode(Qt::IgnoreAspectRatio); break;
+        case KeepAspectRatio: videowidget->setAspectRatioMode(Qt::KeepAspectRatio); break;
+        case KeepAspectRatioByExpanding: videowidget->setAspectRatioMode(Qt::KeepAspectRatioByExpanding); break;
+    }
 }
 
 BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM Lparam)

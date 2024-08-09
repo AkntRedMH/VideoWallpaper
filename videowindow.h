@@ -7,8 +7,6 @@
 #include <QVideoWidget>
 #include <windows.h>
 
-#define VolumeRatio 10 // 滚动条和实际设置音量之间的倍数关系。
-
 class VideoWindow : public QWidget
 {
     Q_OBJECT
@@ -47,9 +45,9 @@ public:
     };
     enum AspectRatioMode
     {
-        Fill,
-        Fit,
-        Stretch
+        IgnoreAspectRatio,
+        KeepAspectRatio,
+        KeepAspectRatioByExpanding
     };
 
     static HWND hWorkerW;
@@ -72,6 +70,7 @@ public:
     void SetVideoVolume(int volume);
     void SetPlaybackMode(PlaybackMode mode);
     void SetPlaybackRate(float rate);
+    void SetAspectRatioMode(AspectRatioMode mode);
 
 private:
     QMediaPlayer *player;

@@ -92,7 +92,7 @@
             <widget class="QComboBox" name="CB_fit">
              <item>
               <property name="text">
-               <string>填充</string>
+               <string>拉伸</string>
               </property>
              </item>
              <item>
@@ -102,7 +102,7 @@
              </item>
              <item>
               <property name="text">
-               <string>拉伸</string>
+               <string>填充</string>
               </property>
              </item>
             </widget>

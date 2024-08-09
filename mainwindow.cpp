@@ -32,6 +32,7 @@ void MainWindow::SetConfig()
 
     config.setValue("mode", ui->CB_mode->currentIndex());
     config.setValue("fit", ui->CB_fit->currentIndex());
+    config.setValue("rate", ui->HS_rate->value());
 
     if(videowindow->GetMuteState()) config.setValue("mute", true);
     else config.setValue("mute", false);
@@ -57,7 +58,13 @@ void MainWindow::GetConfig()
     videowindow->SetPlaybackMode(static_cast<VideoWindow::PlaybackMode>(temp));
     ui->CB_mode->setCurrentIndex(temp);
 
-    ui->CB_fit->setCurrentIndex(config.value("fit", 0).toInt());
+    temp = config.value("fit", VideoWindow::KeepAspectRatioByExpanding).toInt();
+    videowindow->SetAspectRatioMode(static_cast<VideoWindow::AspectRatioMode>(temp));
+    ui->CB_fit->setCurrentIndex(temp);
+
+    temp = config.value("rate", 10).toInt();
+    videowindow->SetPlaybackRate(temp);
+    ui->HS_rate->setValue(temp);
 
     if(config.value("mute", true).toBool())
     {
@@ -273,6 +280,6 @@ void MainWindow::on_HS_rate_valueChanged(int value)
     QPoint pos = ui->HS_rate->rect().center();
     pos = ui->HS_rate->mapToGlobal(pos);
 
-    videowindow->SetPlaybackRate(value/10.0);
-    QToolTip::showText(pos, QString::number(value/10.0) + 'x', ui->HS_rate);
+    videowindow->SetPlaybackRate(value);
+    QToolTip::showText(pos, QString::number(value/PlaybackRateRatio) + 'x', ui->HS_rate);
 }

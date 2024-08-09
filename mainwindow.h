@@ -8,6 +8,9 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 
+#define VolumeRatio 10 // 滚动条和实际设置音量之间的倍数关系。
+#define PlaybackRateRatio 10.0 // 滚动条和实际设置播放速度之间的倍数关系。
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
