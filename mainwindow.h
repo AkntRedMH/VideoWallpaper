@@ -23,8 +23,6 @@ public:
 private:
     Ui::MainWindow *ui;
 
-    #define VolumeGain 10 // 滚动条和实际设置音量之间的倍数关系。
-
     VideoWindow *videowindow;
     QStringList filepathsbackup;
     QSystemTrayIcon *systemtray;

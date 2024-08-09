@@ -47,10 +47,10 @@ void VideoWindow::VideoRemove(int index)
     playlist->removeMedia(index);
 }
 
-void VideoWindow::VideoPlay(int volume = -1)
+void VideoWindow::VideoPlay(int volume)
 {
     ShowWindow(hWorkerW, SW_SHOW);
-    if(volume!=-1) player->setVolume(volume);
+    if(volume!=-1) SetVideoVolume(volume);
     player->play();
 }
 
@@ -134,18 +134,18 @@ void VideoWindow::SetPlayIndex(int index)
 
 void VideoWindow::SetVideoVolume(int volume)
 {
-    player->setVolume(volume);
+    player->setVolume(volume*VolumeRatio);
 }
 
 void VideoWindow::SetPlaybackMode(PlaybackMode mode)
 {
     switch(mode)
     {
-        case CurrentItemOnce: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemOnce); break;
-        case CurrentItemInLoop: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop); break;
-        case Sequential: playlist->setPlaybackMode(QMediaPlaylist::Sequential); break;
-        case Loop: playlist->setPlaybackMode(QMediaPlaylist::Loop); break;
-        case Random: playlist->setPlaybackMode(QMediaPlaylist::Random); break;
+        case 0: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemOnce); break;
+        case 1: playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop); break;
+        case 2: playlist->setPlaybackMode(QMediaPlaylist::Sequential); break;
+        case 3: playlist->setPlaybackMode(QMediaPlaylist::Loop); break;
+        case 4: playlist->setPlaybackMode(QMediaPlaylist::Random); break;
     }
 }
 

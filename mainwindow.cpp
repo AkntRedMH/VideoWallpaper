@@ -51,8 +51,12 @@ void MainWindow::SetConfig()
 void MainWindow::GetConfig()
 {
     QSettings config("Settings.ini", QSettings::IniFormat);
+    int temp; // 临时变量
 
-    ui->CB_mode->setCurrentIndex(config.value("mode", 2).toInt());
+    temp = config.value("mode", VideoWindow::CurrentItemInLoop).toInt();
+    videowindow->SetPlaybackMode(static_cast<VideoWindow::PlaybackMode>(temp));
+    ui->CB_mode->setCurrentIndex(temp);
+
     ui->CB_fit->setCurrentIndex(config.value("fit", 0).toInt());
 
     if(config.value("mute", true).toBool())
@@ -66,7 +70,9 @@ void MainWindow::GetConfig()
         ui->PB_mute->setIcon(QIcon(":/icons/unmute"));
     }
 
-    ui->HS_volume->setValue(config.value("volume", 0).toInt());
+    temp = config.value("volume", 0).toInt();
+    videowindow->SetVideoVolume(temp);
+    ui->HS_volume->setValue(temp);
 
     // 读取路径到列表
     QStringList filepaths;
@@ -188,7 +194,7 @@ void MainWindow::on_PB_play_clicked()
     }
     else
     {
-        videowindow->VideoPlay(ui->HS_volume->value()*VolumeGain);
+        videowindow->VideoPlay(ui->HS_volume->value());
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
     }
 }
@@ -231,8 +237,8 @@ void MainWindow::on_HS_volume_valueChanged(int value)
     QPoint pos = ui->HS_volume->rect().center();
     pos = ui->HS_volume->mapToGlobal(pos);
 
-    videowindow->SetVideoVolume(value*10);
-    QToolTip::showText(pos, QString::number(value*VolumeGain) + '%', ui->HS_volume);
+    videowindow->SetVideoVolume(value);
+    QToolTip::showText(pos, QString::number(value*VolumeRatio) + '%', ui->HS_volume);
 }
 
 void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
@@ -241,7 +247,7 @@ void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
 
     if(videowindow->GetVideoState()!=VideoWindow::PlayingState)
     {
-        videowindow->VideoPlay(ui->HS_volume->value()*VolumeGain);
+        videowindow->VideoPlay(ui->HS_volume->value());
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
     }
 }

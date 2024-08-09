@@ -7,17 +7,23 @@
 #include <QVideoWidget>
 #include <windows.h>
 
+#define VolumeRatio 10 // 滚动条和实际设置音量之间的倍数关系。
+
 class VideoWindow : public QWidget
 {
     Q_OBJECT
-    Q_ENUMS(State)
-    Q_ENUMS(PlaybackMode)
 
 public:
     explicit VideoWindow(QWidget *parent = nullptr);
     ~VideoWindow();
 
-    enum State{StoppedState, PlayingState, PausedState, ErrorState};
+    enum State
+    {
+        StoppedState,
+        PlayingState,
+        PausedState,
+        ErrorState
+    };
     enum MediaStatus
     {
         UnknownMediaStatus,
@@ -31,13 +37,26 @@ public:
         InvalidMedia,
         ErrorMediaStatus
     };
-    enum PlaybackMode{CurrentItemOnce, CurrentItemInLoop, Sequential, Loop, Random};
+    enum PlaybackMode
+    {
+        CurrentItemOnce,
+        CurrentItemInLoop,
+        Sequential,
+        Loop,
+        Random
+    };
+    enum AspectRatioMode
+    {
+        Fill,
+        Fit,
+        Stretch
+    };
 
     static HWND hWorkerW;
 
     void VideoAdd(QStringList filePaths);
     void VideoRemove(int index);
-    void VideoPlay(int volume);
+    void VideoPlay(int volume = -1);
     void VideoPause();
     void VideoUp();
     void VideoStop();
