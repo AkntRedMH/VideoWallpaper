@@ -32,6 +32,7 @@ private:
     QMenu *menu;
     QAction *play;
     QAction *stop;
+    QAction *mute;
     QAction *quit;
 
     void SetConfig();

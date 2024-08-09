@@ -116,15 +116,23 @@ void MainWindow::SetSystemTray()
     // 设置系统托盘的上下文菜单
     systemtray->setContextMenu(menu);
 
-    play = new QAction("播放/暂停", this);
+    play = new QAction(this);
     connect(play, &QAction::triggered, this, &MainWindow::on_PB_play_clicked);
     menu->addAction(play);
+    if(videowindow->GetVideoState()!=VideoWindow::PlayingState) play->setText("播放视频");
+    else play->setText("暂停视频");
 
-    stop = new QAction("停止", this);
+    stop = new QAction("停止视频", this);
     connect(stop, &QAction::triggered, this, &MainWindow::on_PB_stop_clicked);
     menu->addAction(stop);
 
-    quit = new QAction("退出", this);
+    mute = new QAction(this);
+    connect(mute, &QAction::triggered, this, &MainWindow::on_PB_mute_clicked);
+    menu->addAction(mute);
+    if(videowindow->GetMuteState()) mute->setText("开启声音");
+    else mute->setText("关闭声音");
+
+    quit = new QAction("退出程序", this);
     connect(quit, &QAction::triggered, qApp, &QApplication::quit);
     menu->addAction(quit);
 
@@ -198,11 +206,13 @@ void MainWindow::on_PB_play_clicked()
     {
         videowindow->VideoPause();
         ui->PB_play->setIcon(QIcon(":/icons/play"));
+        play->setText("播放视频");
     }
     else
     {
         videowindow->VideoPlay(ui->HS_volume->value());
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
+        play->setText("暂停视频");
     }
 }
 
@@ -217,6 +227,7 @@ void MainWindow::on_PB_stop_clicked()
     {
         videowindow->VideoStop();
         ui->PB_play->setIcon(QIcon(":/icons/play"));
+        play->setText("播放视频");
     }
 }
 
@@ -231,11 +242,13 @@ void MainWindow::on_PB_mute_clicked()
     {
         videowindow->VideoUnmute();
         ui->PB_mute->setIcon(QIcon(":/icons/unmute"));
+        mute->setText("关闭声音");
     }
     else
     {
         videowindow->VideoMute();
         ui->PB_mute->setIcon(QIcon(":/icons/mute"));
+        mute->setText("开启声音");
     }
 }
 
@@ -256,6 +269,7 @@ void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
     {
         videowindow->VideoPlay(ui->HS_volume->value());
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
+        play->setText("暂停视频");
     }
 }
 
@@ -272,7 +286,12 @@ void MainWindow::on_CB_mode_currentIndexChanged(int index)
 
 void MainWindow::on_CB_fit_currentIndexChanged(int index)
 {
-    Q_UNUSED(index);
+    switch(index)
+    {
+        case 0: videowindow->SetAspectRatioMode(VideoWindow::IgnoreAspectRatio); break;
+        case 1: videowindow->SetAspectRatioMode(VideoWindow::KeepAspectRatio); break;
+        case 2: videowindow->SetAspectRatioMode(VideoWindow::KeepAspectRatioByExpanding); break;
+    }
 }
 
 void MainWindow::on_HS_rate_valueChanged(int value)
