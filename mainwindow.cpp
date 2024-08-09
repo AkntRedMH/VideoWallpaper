@@ -188,7 +188,7 @@ void MainWindow::on_PB_play_clicked()
     }
     else
     {
-        videowindow->VideoPlay(ui->HS_volume->value());
+        videowindow->VideoPlay(ui->HS_volume->value()*VolumeGain);
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
     }
 }
@@ -232,7 +232,7 @@ void MainWindow::on_HS_volume_valueChanged(int value)
     pos = ui->HS_volume->mapToGlobal(pos);
 
     videowindow->SetVideoVolume(value*10);
-    QToolTip::showText(pos, QString::number(value*10) + '%', ui->HS_volume);
+    QToolTip::showText(pos, QString::number(value*VolumeGain) + '%', ui->HS_volume);
 }
 
 void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
@@ -241,7 +241,7 @@ void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
 
     if(videowindow->GetVideoState()!=VideoWindow::PlayingState)
     {
-        videowindow->VideoPlay(ui->HS_volume->value());
+        videowindow->VideoPlay(ui->HS_volume->value()*VolumeGain);
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
     }
 }
