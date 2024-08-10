@@ -133,7 +133,7 @@ void MainWindow::SetSystemTray()
     else mute->setText("关闭声音");
 
     quit = new QAction("退出程序", this);
-    connect(quit, &QAction::triggered, qApp, &QApplication::quit);
+    connect(quit, &QAction::triggered, this, [this](){this->SetConfig();qApp->quit();});
     menu->addAction(quit);
 
     connect(systemtray, &QSystemTrayIcon::activated, this, &MainWindow::onTrayIconActivated);
@@ -175,8 +175,6 @@ void MainWindow::SetFilePaths(QStringList filepaths)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    SetConfig();
-
     this->hide();
     event->ignore();
 }
