@@ -166,6 +166,11 @@ void VideoWindow::SetAspectRatioMode(VideoWindow::AspectRatioMode mode)
     }
 }
 
+int VideoWindow::GetPlayIndex()
+{
+    return playlist->currentIndex();
+}
+
 BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM Lparam)
 {
     HWND hDefView = FindWindowEx(hwnd, 0, L"SHELLDLL_DefView", 0);

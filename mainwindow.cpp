@@ -47,6 +47,14 @@ void MainWindow::SetConfig()
         config.setValue("Paths/"+QString::number(index), filepath);
         index++;
     }
+
+    //设置最后播放
+    if(videowindow->GetPlayIndex()!=-1)
+    {
+        int currentindex = videowindow->GetPlayIndex();
+        config.setValue("Last/0", currentindex);
+        config.setValue("Last/1", filepathsbackup[currentindex]);
+    }
 }
 
 void MainWindow::GetConfig()
@@ -102,6 +110,11 @@ void MainWindow::GetConfig()
 
     filepathsbackup.clear();
     SetFilePaths(filepaths);
+
+    //设置最后播放
+    temp = config.value("Last/0", 0).toInt();
+    QString path = config.value("Last/1").toString();
+    if(path==filepathsbackup[temp]) videowindow->SetPlayIndex(temp);
 }
 
 void MainWindow::SetSystemTray()
@@ -147,9 +160,14 @@ void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
     switch(reason)
     {
         case QSystemTrayIcon::DoubleClick:
-            if(this->isHidden()) this->show();
+            if(this->isHidden())
+            {
+                this->show();
+                this->raise();
+                this->activateWindow();
+            }
             else this->hide();
-        break;
+            break;
 
         default: break;
     }

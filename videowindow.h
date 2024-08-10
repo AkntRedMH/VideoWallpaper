@@ -66,6 +66,7 @@ public:
     State GetVideoState();
     MediaStatus GetMediaState();
     bool GetMuteState();
+    int GetPlayIndex();
     void SetPlayIndex(int index);
     void SetVideoVolume(int volume);
     void SetPlaybackMode(PlaybackMode mode);
