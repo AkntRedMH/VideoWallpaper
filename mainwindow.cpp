@@ -294,9 +294,10 @@ void MainWindow::on_CB_mode_currentIndexChanged(int index)
     switch(index)
     {
         case 0: videowindow->SetPlaybackMode(VideoWindow::CurrentItemOnce); break;
-        case 1: videowindow->SetPlaybackMode(VideoWindow::Loop); break;
-        case 2: videowindow->SetPlaybackMode(VideoWindow::CurrentItemInLoop); break;
-        case 3: videowindow->SetPlaybackMode(VideoWindow::Random); break;
+        case 1: videowindow->SetPlaybackMode(VideoWindow::CurrentItemInLoop); break;
+        case 2: videowindow->SetPlaybackMode(VideoWindow::Sequential); break;
+        case 3: videowindow->SetPlaybackMode(VideoWindow::Loop); break;
+        case 4: videowindow->SetPlaybackMode(VideoWindow::Random); break;
     }
 }
 
