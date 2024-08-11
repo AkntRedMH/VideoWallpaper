@@ -1,11 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QToolTip>
-#include <windows.h>
+
+#define TIMEOUT 2000 // 每两秒检测一次
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
     GetConfig();
 
     SetSystemTray();
+
+    // 启动一个检测其他程序全屏或最大化的定时器
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
+    timer->start(TIMEOUT);
 }
 
 MainWindow::~MainWindow()
@@ -191,6 +196,53 @@ void MainWindow::SetFilePaths(QStringList filepaths)
     ui->LW_list->addItems(filepaths);
 }
 
+BOOL CALLBACK EnumWindowsProc_TimeOut(_In_ HWND hwnd, _In_ LPARAM Lparam)
+{
+    MainWindow* pthis = reinterpret_cast<MainWindow*>(Lparam);
+
+    if(IsZoomed(hwnd))
+    {
+        pthis->timeout_invisible = true;
+        return FALSE;
+    }
+
+    QUERY_USER_NOTIFICATION_STATE pquns;
+    HRESULT hr = SHQueryUserNotificationState(&pquns);
+    if(SUCCEEDED(hr))
+    {
+        switch(pquns)
+        {
+            case QUNS_BUSY:
+                pthis->timeout_invisible = true;
+                return FALSE;
+            case QUNS_RUNNING_D3D_FULL_SCREEN:
+                pthis->timeout_invisible = true;
+                return FALSE;
+            default:
+                break;
+        }
+    }
+
+    pthis->timeout_invisible = false;
+    return TRUE;
+}
+
+void MainWindow::onTimeOut()
+{
+    EnumWindows(EnumWindowsProc_TimeOut, reinterpret_cast<LPARAM>(this));
+
+    if(this->timeout_invisible && videowindow->GetVideoState()==PlayingState)
+    {
+        timeout_playstate = true;
+        on_PB_play_clicked();
+    }
+    else if(!this->timeout_invisible && timeout_playstate)
+    {
+        timeout_playstate = false;
+        on_PB_play_clicked();
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     this->hide();
@@ -318,4 +370,10 @@ void MainWindow::on_HS_rate_valueChanged(int value)
 
     videowindow->SetPlaybackRate(value);
     QToolTip::showText(pos, QString::number(value/PlaybackRateRatio) + 'x', ui->HS_rate);
+}
+
+void MainWindow::on_PB_timer_toggled(bool checked)
+{
+    if(checked) timer->start(TIMEOUT);
+    else timer->stop();
 }

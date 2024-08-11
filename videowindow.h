@@ -1,18 +1,16 @@
 #ifndef VIDEOWINDOW_H
 #define VIDEOWINDOW_H
 
-#include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include <QVideoWidget>
-#include <windows.h>
 
 enum State
 {
     StoppedState,
     PlayingState,
     PausedState,
-    ErrorState
+    ErrorState,
 };
 enum MediaStatus
 {
@@ -50,7 +48,7 @@ public:
     explicit VideoWindow(QWidget *parent = nullptr);
     ~VideoWindow();
 
-    HWND hWorkerW;
+    HWND hWorkerW; // 存储第二个WorkerW的句柄
 
     void VideoAdd(QStringList filePaths);
     void VideoRemove(int index);

@@ -1,10 +1,6 @@
 #include "videowindow.h"
 #include "mainwindow.h"
-#include <QDebug>
 #include <QVBoxLayout>
-#include <windows.h>
-
-//HWND VideoWindow::hWorkerW; // 存储第二个WorkerW的句柄
 
 VideoWindow::VideoWindow(QWidget *parent) : QWidget(parent)
 {
@@ -171,7 +167,7 @@ int VideoWindow::GetPlayIndex()
     return playlist->currentIndex();
 }
 
-BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM Lparam)
+BOOL CALLBACK EnumWindowsProc_Wall(_In_ HWND hwnd, _In_ LPARAM Lparam)
 {
     VideoWindow* pthis = reinterpret_cast<VideoWindow*>(Lparam);
 
@@ -197,6 +193,6 @@ void VideoWindow::SetWallpaper()
 //    SendMessageTimeout(hProgman, 0x52C, 0, 0, 0, 100, 0);         // 给它发特殊消息
     SendMessage(hProgman, 0x052C, 0x000D, 0x0001);                // 修改消息，参考壁纸引擎
 //    SetParent((HWND)this->winId(), hProgman);                     // 将视频窗口设置为PM的子窗口
-    EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(this)); // 找到第二个WorkerW窗口并隐藏它
+    EnumWindows(EnumWindowsProc_Wall, reinterpret_cast<LPARAM>(this)); // 找到第二个WorkerW窗口并隐藏它
     SetParent((HWND)this->winId(), hWorkerW);                     // 将视频窗口设置为第二个WorkerW的子窗口
 }
