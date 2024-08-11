@@ -62,12 +62,12 @@ void MainWindow::GetConfig()
     QSettings config("Settings.ini", QSettings::IniFormat);
     int temp; // 临时变量
 
-    temp = config.value("mode", VideoWindow::CurrentItemInLoop).toInt();
-    videowindow->SetPlaybackMode(static_cast<VideoWindow::PlaybackMode>(temp));
+    temp = config.value("mode", CurrentItemInLoop).toInt();
+    videowindow->SetPlaybackMode(static_cast<PlaybackMode>(temp));
     ui->CB_mode->setCurrentIndex(temp);
 
-    temp = config.value("fit", VideoWindow::KeepAspectRatioByExpanding).toInt();
-    videowindow->SetAspectRatioMode(static_cast<VideoWindow::AspectRatioMode>(temp));
+    temp = config.value("fit", KeepAspectRatioByExpanding).toInt();
+    videowindow->SetAspectRatioMode(static_cast<AspectRatioMode>(temp));
     ui->CB_fit->setCurrentIndex(temp);
 
     temp = config.value("rate", 10).toInt();
@@ -132,7 +132,7 @@ void MainWindow::SetSystemTray()
     play = new QAction(this);
     connect(play, &QAction::triggered, this, &MainWindow::on_PB_play_clicked);
     menu->addAction(play);
-    if(videowindow->GetVideoState()!=VideoWindow::PlayingState) play->setText("播放视频");
+    if(videowindow->GetVideoState()!=PlayingState) play->setText("播放视频");
     else play->setText("暂停视频");
 
     stop = new QAction("停止视频", this);
@@ -218,7 +218,7 @@ void MainWindow::on_PB_remove_clicked()
 
 void MainWindow::on_PB_play_clicked()
 {
-    if(videowindow->GetVideoState()==VideoWindow::PlayingState)
+    if(videowindow->GetVideoState()==PlayingState)
     {
         videowindow->VideoPause();
         ui->PB_play->setIcon(QIcon(":/icons/play"));
@@ -239,7 +239,7 @@ void MainWindow::on_PB_up_clicked()
 
 void MainWindow::on_PB_stop_clicked()
 {
-    if(videowindow->GetVideoState()!=VideoWindow::StoppedState)
+    if(videowindow->GetVideoState()!=StoppedState)
     {
         videowindow->VideoStop();
         ui->PB_play->setIcon(QIcon(":/icons/play"));
@@ -281,7 +281,7 @@ void MainWindow::on_LW_list_itemDoubleClicked(QListWidgetItem *item)
 {
     videowindow->SetPlayIndex(ui->LW_list->row(item));
 
-    if(videowindow->GetVideoState()!=VideoWindow::PlayingState)
+    if(videowindow->GetVideoState()!=PlayingState)
     {
         videowindow->VideoPlay(ui->HS_volume->value());
         ui->PB_play->setIcon(QIcon(":/icons/pause"));
@@ -293,11 +293,11 @@ void MainWindow::on_CB_mode_currentIndexChanged(int index)
 {
     switch(index)
     {
-        case 0: videowindow->SetPlaybackMode(VideoWindow::CurrentItemOnce); break;
-        case 1: videowindow->SetPlaybackMode(VideoWindow::CurrentItemInLoop); break;
-        case 2: videowindow->SetPlaybackMode(VideoWindow::Sequential); break;
-        case 3: videowindow->SetPlaybackMode(VideoWindow::Loop); break;
-        case 4: videowindow->SetPlaybackMode(VideoWindow::Random); break;
+        case 0: videowindow->SetPlaybackMode(CurrentItemOnce); break;
+        case 1: videowindow->SetPlaybackMode(CurrentItemInLoop); break;
+        case 2: videowindow->SetPlaybackMode(Sequential); break;
+        case 3: videowindow->SetPlaybackMode(Loop); break;
+        case 4: videowindow->SetPlaybackMode(Random); break;
     }
 }
 
@@ -305,9 +305,9 @@ void MainWindow::on_CB_fit_currentIndexChanged(int index)
 {
     switch(index)
     {
-        case 0: videowindow->SetAspectRatioMode(VideoWindow::IgnoreAspectRatio); break;
-        case 1: videowindow->SetAspectRatioMode(VideoWindow::KeepAspectRatio); break;
-        case 2: videowindow->SetAspectRatioMode(VideoWindow::KeepAspectRatioByExpanding); break;
+        case 0: videowindow->SetAspectRatioMode(IgnoreAspectRatio); break;
+        case 1: videowindow->SetAspectRatioMode(KeepAspectRatio); break;
+        case 2: videowindow->SetAspectRatioMode(KeepAspectRatioByExpanding); break;
     }
 }
 

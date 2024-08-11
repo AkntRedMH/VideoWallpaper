@@ -7,6 +7,41 @@
 #include <QVideoWidget>
 #include <windows.h>
 
+enum State
+{
+    StoppedState,
+    PlayingState,
+    PausedState,
+    ErrorState
+};
+enum MediaStatus
+{
+    UnknownMediaStatus,
+    NoMedia,
+    LoadingMedia,
+    LoadedMedia,
+    StalledMedia,
+    BufferingMedia,
+    BufferedMedia,
+    EndOfMedia,
+    InvalidMedia,
+    ErrorMediaStatus
+};
+enum PlaybackMode
+{
+    CurrentItemOnce,
+    CurrentItemInLoop,
+    Sequential,
+    Loop,
+    Random
+};
+enum AspectRatioMode
+{
+    IgnoreAspectRatio,
+    KeepAspectRatio,
+    KeepAspectRatioByExpanding
+};
+
 class VideoWindow : public QWidget
 {
     Q_OBJECT
@@ -15,42 +50,7 @@ public:
     explicit VideoWindow(QWidget *parent = nullptr);
     ~VideoWindow();
 
-    enum State
-    {
-        StoppedState,
-        PlayingState,
-        PausedState,
-        ErrorState
-    };
-    enum MediaStatus
-    {
-        UnknownMediaStatus,
-        NoMedia,
-        LoadingMedia,
-        LoadedMedia,
-        StalledMedia,
-        BufferingMedia,
-        BufferedMedia,
-        EndOfMedia,
-        InvalidMedia,
-        ErrorMediaStatus
-    };
-    enum PlaybackMode
-    {
-        CurrentItemOnce,
-        CurrentItemInLoop,
-        Sequential,
-        Loop,
-        Random
-    };
-    enum AspectRatioMode
-    {
-        IgnoreAspectRatio,
-        KeepAspectRatio,
-        KeepAspectRatioByExpanding
-    };
-
-    static HWND hWorkerW;
+    HWND hWorkerW;
 
     void VideoAdd(QStringList filePaths);
     void VideoRemove(int index);

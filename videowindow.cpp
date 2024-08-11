@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 #include <windows.h>
 
-HWND VideoWindow::hWorkerW; // 存储第二个WorkerW的句柄
+//HWND VideoWindow::hWorkerW; // 存储第二个WorkerW的句柄
 
 VideoWindow::VideoWindow(QWidget *parent) : QWidget(parent)
 {
@@ -86,7 +86,7 @@ void VideoWindow::VideoUnmute()
     player->setMuted(false);
 }
 
-VideoWindow::State VideoWindow::GetVideoState()
+State VideoWindow::GetVideoState()
 {
     QMediaPlayer::State state = player->state();
 
@@ -100,7 +100,7 @@ VideoWindow::State VideoWindow::GetVideoState()
     return ErrorState;
 }
 
-VideoWindow::MediaStatus VideoWindow::GetMediaState()
+MediaStatus VideoWindow::GetMediaState()
 {
     QMediaPlayer::MediaStatus mediastate = player->mediaStatus();
 
@@ -136,7 +136,7 @@ void VideoWindow::SetVideoVolume(int volume)
     player->setVolume(volume*VolumeRatio);
 }
 
-void VideoWindow::SetPlaybackMode(VideoWindow::PlaybackMode mode)
+void VideoWindow::SetPlaybackMode(PlaybackMode mode)
 {
     switch(mode)
     {
@@ -156,7 +156,7 @@ void VideoWindow::SetPlaybackRate(float rate)
     player->play();
 }
 
-void VideoWindow::SetAspectRatioMode(VideoWindow::AspectRatioMode mode)
+void VideoWindow::SetAspectRatioMode(AspectRatioMode mode)
 {
     switch(mode)
     {
@@ -173,20 +173,18 @@ int VideoWindow::GetPlayIndex()
 
 BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM Lparam)
 {
+    VideoWindow* pthis = reinterpret_cast<VideoWindow*>(Lparam);
+
     HWND hDefView = FindWindowEx(hwnd, 0, L"SHELLDLL_DefView", 0);
 
     if(hDefView != 0)
     {
         // 找它的下一个窗口，类名为WorkerW，隐藏它
-        VideoWindow::hWorkerW = FindWindowEx(0, hwnd, L"WorkerW", 0);
-        ShowWindow(VideoWindow::hWorkerW, SW_HIDE);
+        pthis->hWorkerW = FindWindowEx(0, hwnd, L"WorkerW", 0);
+        ShowWindow(pthis->hWorkerW, SW_HIDE);
 
         return FALSE;
     }
-
-    // 抑制“该变量未使用”警告
-    // https://blog.csdn.net/weixin_39445116/article/details/115229042
-    Q_UNUSED(Lparam);
 
     return TRUE;
 }
@@ -195,10 +193,10 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM Lparam)
 // https://space.bilibili.com/39665558
 void VideoWindow::SetWallpaper()
 {
-    HWND hProgman = FindWindow(L"Progman", 0);              // 找到PM窗口
-//    SendMessageTimeout(hProgman, 0x52C, 0, 0, 0, 100, 0);	// 给它发特殊消息
-    SendMessage(hProgman, 0x052C, 0x000D, 0x0001);          // 修改消息，参考壁纸引擎
-//    SetParent((HWND)this->winId(), hProgman);               // 将视频窗口设置为PM的子窗口
-    EnumWindows(EnumWindowsProc, 0);                        // 找到第二个WorkerW窗口并隐藏它
-    SetParent((HWND)this->winId(), hWorkerW);               // 将视频窗口设置为第二个WorkerW的子窗口
+    HWND hProgman = FindWindow(L"Progman", 0);                    // 找到PM窗口
+//    SendMessageTimeout(hProgman, 0x52C, 0, 0, 0, 100, 0);         // 给它发特殊消息
+    SendMessage(hProgman, 0x052C, 0x000D, 0x0001);                // 修改消息，参考壁纸引擎
+//    SetParent((HWND)this->winId(), hProgman);                     // 将视频窗口设置为PM的子窗口
+    EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(this)); // 找到第二个WorkerW窗口并隐藏它
+    SetParent((HWND)this->winId(), hWorkerW);                     // 将视频窗口设置为第二个WorkerW的子窗口
 }
