@@ -200,27 +200,11 @@ BOOL CALLBACK EnumWindowsProc_TimeOut(_In_ HWND hwnd, _In_ LPARAM Lparam)
 {
     MainWindow* pthis = reinterpret_cast<MainWindow*>(Lparam);
 
+    // 检测是否有其他程序最大化
     if(IsZoomed(hwnd))
     {
         pthis->timeout_invisible = true;
         return FALSE;
-    }
-
-    QUERY_USER_NOTIFICATION_STATE pquns;
-    HRESULT hr = SHQueryUserNotificationState(&pquns);
-    if(SUCCEEDED(hr))
-    {
-        switch(pquns)
-        {
-            case QUNS_BUSY:
-                pthis->timeout_invisible = true;
-                return FALSE;
-            case QUNS_RUNNING_D3D_FULL_SCREEN:
-                pthis->timeout_invisible = true;
-                return FALSE;
-            default:
-                break;
-        }
     }
 
     pthis->timeout_invisible = false;
@@ -230,6 +214,24 @@ BOOL CALLBACK EnumWindowsProc_TimeOut(_In_ HWND hwnd, _In_ LPARAM Lparam)
 void MainWindow::onTimeOut()
 {
     EnumWindows(EnumWindowsProc_TimeOut, reinterpret_cast<LPARAM>(this));
+
+    // 检测是否有其他程序全屏
+    QUERY_USER_NOTIFICATION_STATE pquns;
+    HRESULT hr = SHQueryUserNotificationState(&pquns);
+    if(SUCCEEDED(hr))
+    {
+        switch(pquns)
+        {
+            case QUNS_BUSY:
+                timeout_invisible = true;
+                break;
+            case QUNS_RUNNING_D3D_FULL_SCREEN:
+                timeout_invisible = true;
+                break;
+            default:
+                break;
+        }
+    }
 
     if(this->timeout_invisible && videowindow->GetVideoState()==PlayingState)
     {
