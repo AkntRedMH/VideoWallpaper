@@ -325,7 +325,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>全屏暂停</string>
+          <string>其他应用全屏或最大化时暂停播放</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -349,6 +349,50 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QPushButton" name="PB_displayoffstop">
+      <property name="geometry">
+       <rect>
+        <x>25</x>
+        <y>140</y>
+        <width>112</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>熄屏停止</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="PB_alwaysondisplay">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>140</y>
+        <width>112</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>屏幕常亮</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
      </widget>
     </widget>
    </widget>
