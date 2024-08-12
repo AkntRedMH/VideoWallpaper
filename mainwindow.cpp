@@ -5,6 +5,9 @@
 #include <QFileInfo>
 #include <QToolTip>
 
+#include <QDesktopServices>
+#include <QUrl>
+
 #define TIMEOUT 2000 // 每两秒检测一次
 
 MainWindow::MainWindow(QWidget *parent)
@@ -120,11 +123,12 @@ void MainWindow::GetConfig()
     filepathsbackup.clear();
     SetFilePaths(filepaths);
 
-    //设置最后播放
+    // 设置最后播放
     temp = config.value("Last/0", 0).toInt();
-    QString path = config.value("Last/1").toString();
-    if(path==filepathsbackup[temp]) videowindow->SetPlayIndex(temp);
+    QString path = config.value("Last/1", "null").toString();
+    if(path!="null") if(path==filepathsbackup[temp]) videowindow->SetPlayIndex(temp);
 
+    // 设置定时器
     if(config.value("timer", true).toBool())
     {
         timer->start(TIMEOUT);
@@ -392,4 +396,10 @@ void MainWindow::on_PB_timer_toggled(bool checked)
 {
     if(checked) timer->start(TIMEOUT);
     else timer->stop();
+}
+
+void MainWindow::on_PB_github_clicked()
+{
+    const QUrl url("https://github.com/AkntRedMH/VideoWallpaper");
+    QDesktopServices::openUrl(url);
 }
