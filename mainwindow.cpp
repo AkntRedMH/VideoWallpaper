@@ -15,14 +15,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     videowindow = new VideoWindow(nullptr);
 
+    // 启动一个检测其他程序全屏或最大化的定时器
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
+
     GetConfig();
 
     SetSystemTray();
 
-    // 启动一个检测其他程序全屏或最大化的定时器
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
-    timer->start(TIMEOUT);
+    //确保开始界面是主界面
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow()
@@ -60,6 +62,8 @@ void MainWindow::SetConfig()
         config.setValue("Last/0", currentindex);
         config.setValue("Last/1", filepathsbackup[currentindex]);
     }
+
+    config.setValue("timer", ui->PB_timer->isChecked());
 }
 
 void MainWindow::GetConfig()
@@ -120,6 +124,16 @@ void MainWindow::GetConfig()
     temp = config.value("Last/0", 0).toInt();
     QString path = config.value("Last/1").toString();
     if(path==filepathsbackup[temp]) videowindow->SetPlayIndex(temp);
+
+    if(config.value("timer", true).toBool())
+    {
+        timer->start(TIMEOUT);
+        ui->PB_timer->setChecked(true);
+    }
+    else
+    {
+        ui->PB_timer->setChecked(false);
+    }
 }
 
 void MainWindow::SetSystemTray()
@@ -201,7 +215,7 @@ BOOL CALLBACK EnumWindowsProc_TimeOut(_In_ HWND hwnd, _In_ LPARAM Lparam)
     MainWindow* pthis = reinterpret_cast<MainWindow*>(Lparam);
 
     // 检测是否有其他程序最大化
-    if(IsZoomed(hwnd))
+    if(IsZoomed(hwnd) && IsWindowVisible(hwnd))
     {
         pthis->timeout_invisible = true;
         return FALSE;

@@ -146,10 +146,7 @@ void VideoWindow::SetPlaybackMode(PlaybackMode mode)
 
 void VideoWindow::SetPlaybackRate(float rate)
 {
-    // 在设置前后暂停，减少闪烁。
-    player->pause();
     player->setPlaybackRate(rate/PlaybackRateRatio);
-    player->play();
 }
 
 void VideoWindow::SetAspectRatioMode(AspectRatioMode mode)
