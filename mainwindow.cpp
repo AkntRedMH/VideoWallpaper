@@ -66,8 +66,7 @@ void MainWindow::SetConfig()
     if(videowindow->GetPlayIndex()!=-1)
     {
         int currentindex = videowindow->GetPlayIndex();
-        config.setValue("Last/0", currentindex);
-        config.setValue("Last/1", filepathsbackup[currentindex]);
+        config.setValue("last", filepathsbackup[currentindex]);
     }
 
     config.setValue("timer", ui->PB_occupied->isChecked());
@@ -136,9 +135,9 @@ void MainWindow::GetConfig()
     SetFilePaths(filepaths);
 
     // 设置最后播放
-    temp = config.value("Last/0", 0).toInt();
-    QString path = config.value("Last/1", "null").toString();
-    if(path!="null") if(path==filepathsbackup[temp]) videowindow->SetPlayIndex(temp);
+    QString path = config.value("last", "null").toString();
+    temp = filepathsbackup.indexOf(path);
+    if(temp!=-1) videowindow->SetPlayIndex(temp);
 
     // 设置定时器
     if(config.value("timer", true).toBool())
