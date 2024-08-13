@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
 
     // 软件退出时保存设置
-    connect(qApp, &QApplication::aboutToQuit, [this](){this->SetConfig();});
+    connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::SetConfig);
 
     GetConfig();
 
@@ -77,6 +77,8 @@ void MainWindow::SetConfig()
     config.setValue("silentstart", ui->PB_silentstart->isChecked());
 
     config.setValue("autoplay", ui->PB_autoplay->isChecked());
+
+    config.setValue("alwaysondisplay", ui->PB_alwaysondisplay->isChecked());
 }
 
 void MainWindow::GetConfig()
@@ -171,6 +173,14 @@ void MainWindow::GetConfig()
         ui->PB_autoplay->setChecked(true);
     }
     else ui->PB_autoplay->setChecked(false);
+
+    if(config.value("alwaysondisplay", false).toBool())
+    {
+        SetThreadExecutionState(ES_CONTINUOUS|ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED);
+
+        ui->PB_alwaysondisplay->setChecked(true);
+    }
+    else ui->PB_alwaysondisplay->setChecked(false);
 }
 
 void MainWindow::SetSystemTray()
@@ -202,7 +212,7 @@ void MainWindow::SetSystemTray()
     else mute->setText("关闭声音");
 
     quit = new QAction("退出程序", this);
-    connect(quit, &QAction::triggered, this, [](){qApp->quit();});
+    connect(quit, &QAction::triggered, qApp, &QApplication::quit);
     menu->addAction(quit);
 
     connect(systemtray, &QSystemTrayIcon::activated, this, &MainWindow::onTrayIconActivated);
@@ -446,6 +456,17 @@ void MainWindow::on_PB_timer_toggled(bool checked)
 {
     if(checked) timer->start(TIMEOUT);
     else timer->stop();
+}
+
+void MainWindow::on_PB_displayoffstop_toggled(bool checked)
+{
+    Q_UNUSED(checked);
+}
+
+void MainWindow::on_PB_alwaysondisplay_toggled(bool checked)
+{
+    if(checked) SetThreadExecutionState(ES_CONTINUOUS|ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED);
+    else SetThreadExecutionState(ES_CONTINUOUS);
 }
 
 void MainWindow::on_PB_github_clicked()
