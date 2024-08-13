@@ -488,7 +488,7 @@ void MainWindow::on_PB_batterypause_toggled(bool checked)
 
 void MainWindow::on_PB_github_clicked()
 {
-    const QUrl url("https://github.com/AkntRedMH/VideoWallpaper");
+    const QUrl url("https://github.com/redmh-akamk/VideoWallpaper");
     QDesktopServices::openUrl(url);
     this->hide();
 }
