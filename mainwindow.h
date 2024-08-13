@@ -71,9 +71,10 @@ private slots:
     void on_CB_fit_currentIndexChanged(int index);
     void on_HS_rate_valueChanged(int value);
     void on_PB_startup_toggled(bool checked);
-    void on_PB_timer_toggled(bool checked);
+    void on_PB_occupied_toggled(bool checked);
     void on_PB_displayoffstop_toggled(bool checked);
     void on_PB_alwaysondisplay_toggled(bool checked);
+    void on_PB_batterypause_toggled(bool checked);
     void on_PB_github_clicked();
 };
 #endif // MAINWINDOW_H

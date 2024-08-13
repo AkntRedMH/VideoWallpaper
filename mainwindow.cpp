@@ -70,7 +70,7 @@ void MainWindow::SetConfig()
         config.setValue("Last/1", filepathsbackup[currentindex]);
     }
 
-    config.setValue("timer", ui->PB_timer->isChecked());
+    config.setValue("timer", ui->PB_occupied->isChecked());
 
     config.setValue("startup", ui->PB_startup->isChecked());
 
@@ -144,11 +144,11 @@ void MainWindow::GetConfig()
     if(config.value("timer", true).toBool())
     {
         timer->start(TIMEOUT);
-        ui->PB_timer->setChecked(true);
+        ui->PB_occupied->setChecked(true);
     }
     else
     {
-        ui->PB_timer->setChecked(false);
+        ui->PB_occupied->setChecked(false);
     }
 
     if(config.value("startup", false).toBool()) ui->PB_startup->setChecked(true);
@@ -231,6 +231,9 @@ void MainWindow::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
                 this->show();
                 this->raise();
                 this->activateWindow();
+
+                // 显示主界面
+                ui->tabWidget->setCurrentIndex(0);
             }
             else this->hide();
             break;
@@ -452,8 +455,9 @@ void MainWindow::on_PB_startup_toggled(bool checked)
     }
 }
 
-void MainWindow::on_PB_timer_toggled(bool checked)
+void MainWindow::on_PB_occupied_toggled(bool checked)
 {
+    /*如果要加入熄屏停止和电池时暂停，这里与相关的地方可能需要把直接控制定时器改成控制标志位*/
     if(checked) timer->start(TIMEOUT);
     else timer->stop();
 }
@@ -461,12 +465,22 @@ void MainWindow::on_PB_timer_toggled(bool checked)
 void MainWindow::on_PB_displayoffstop_toggled(bool checked)
 {
     Q_UNUSED(checked);
+
+//    GetDevicePowerState();
 }
 
 void MainWindow::on_PB_alwaysondisplay_toggled(bool checked)
 {
     if(checked) SetThreadExecutionState(ES_CONTINUOUS|ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED);
     else SetThreadExecutionState(ES_CONTINUOUS);
+}
+
+void MainWindow::on_PB_batterypause_toggled(bool checked)
+{
+    Q_UNUSED(checked);
+
+//    SYSTEM_POWER_STATUS syspwrst;
+//    GetSystemPowerStatus(&syspwrst);
 }
 
 void MainWindow::on_PB_github_clicked()
