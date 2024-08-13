@@ -211,6 +211,10 @@ void MainWindow::SetSystemTray()
     if(videowindow->GetMuteState()) mute->setText("开启声音");
     else mute->setText("关闭声音");
 
+    restart = new QAction("重新启动", this);
+    connect(restart, &QAction::triggered, [](){qApp->exit(773);});
+    menu->addAction(restart);
+
     quit = new QAction("退出程序", this);
     connect(quit, &QAction::triggered, qApp, &QApplication::quit);
     menu->addAction(quit);

@@ -43,6 +43,7 @@ private:
     QAction *play;
     QAction *stop;
     QAction *mute;
+    QAction *restart;
     QAction *quit;
     QTimer *timer;
     bool timeout_playstate = false;

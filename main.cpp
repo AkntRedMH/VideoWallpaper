@@ -3,6 +3,7 @@
 #include <QLockFile>
 #include <QDir>
 #include <QMessageBox>
+#include <QProcess>
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +30,15 @@ int main(int argc, char *argv[])
     a.setWindowIcon(QIcon(":/icons/app"));
 
     MainWindow w;
-//    w.show();
 
-    return a.exec();
+    // 软件重启
+    // https://blog.csdn.net/x85371169/article/details/89043629
+    int ret = a.exec();
+    if (ret == 773)
+    {
+        QProcess::startDetached(qApp->applicationFilePath(), QStringList());
+        return 0;
+    }
+
+    return ret;
 }
