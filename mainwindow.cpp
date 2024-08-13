@@ -69,7 +69,7 @@ void MainWindow::SetConfig()
         config.setValue("last", filepathsbackup[currentindex]);
     }
 
-    config.setValue("timer", ui->PB_occupied->isChecked());
+    config.setValue("occupied", ui->PB_occupied->isChecked());
 
     config.setValue("startup", ui->PB_startup->isChecked());
 
@@ -140,7 +140,7 @@ void MainWindow::GetConfig()
     if(temp!=-1) videowindow->SetPlayIndex(temp);
 
     // 设置定时器
-    if(config.value("timer", true).toBool())
+    if(config.value("occupied", true).toBool())
     {
         timer->start(TIMEOUT);
         ui->PB_occupied->setChecked(true);
