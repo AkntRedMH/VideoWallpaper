@@ -70,6 +70,7 @@ private slots:
     void on_CB_mode_currentIndexChanged(int index);
     void on_CB_fit_currentIndexChanged(int index);
     void on_HS_rate_valueChanged(int value);
+    void on_PB_startup_toggled(bool checked);
     void on_PB_timer_toggled(bool checked);
     void on_PB_github_clicked();
 };

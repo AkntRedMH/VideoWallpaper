@@ -9,6 +9,7 @@
 #include <QUrl>
 
 #define TIMEOUT 2000 // 每两秒检测一次
+#define AUTO_RUN_KEY "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 启动一个检测其他程序全屏或最大化的定时器
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
+
+    // 软件退出时保存设置
+    connect(qApp, &QApplication::aboutToQuit, [this](){this->SetConfig();});
 
     GetConfig();
 
@@ -67,6 +71,12 @@ void MainWindow::SetConfig()
     }
 
     config.setValue("timer", ui->PB_timer->isChecked());
+
+    config.setValue("startup", ui->PB_startup->isChecked());
+
+    config.setValue("silentstart", ui->PB_silentstart->isChecked());
+
+    config.setValue("autoplay", ui->PB_autoplay->isChecked());
 }
 
 void MainWindow::GetConfig()
@@ -138,6 +148,29 @@ void MainWindow::GetConfig()
     {
         ui->PB_timer->setChecked(false);
     }
+
+    if(config.value("startup", false).toBool()) ui->PB_startup->setChecked(true);
+    else ui->PB_startup->setChecked(false);
+
+    if(config.value("silentstart", false).toBool())
+    {
+        this->hide();
+        ui->PB_silentstart->setChecked(true);
+    }
+    else
+    {
+        this->show();
+        ui->PB_silentstart->setChecked(false);
+    }
+
+    if(config.value("autoplay", false).toBool())
+    {
+        videowindow->VideoPlay(ui->HS_volume->value());
+        ui->PB_play->setIcon(QIcon(":/icons/pause"));
+
+        ui->PB_autoplay->setChecked(true);
+    }
+    else ui->PB_autoplay->setChecked(false);
 }
 
 void MainWindow::SetSystemTray()
@@ -169,7 +202,7 @@ void MainWindow::SetSystemTray()
     else mute->setText("关闭声音");
 
     quit = new QAction("退出程序", this);
-    connect(quit, &QAction::triggered, this, [this](){this->SetConfig();qApp->quit();});
+    connect(quit, &QAction::triggered, this, [](){qApp->quit();});
     menu->addAction(quit);
 
     connect(systemtray, &QSystemTrayIcon::activated, this, &MainWindow::onTrayIconActivated);
@@ -392,6 +425,23 @@ void MainWindow::on_HS_rate_valueChanged(int value)
     QToolTip::showText(pos, QString::number(value/PlaybackRateRatio) + 'x', ui->HS_rate);
 }
 
+void MainWindow::on_PB_startup_toggled(bool checked)
+{
+    // https://blog.csdn.net/null_plus/article/details/123428466
+    QString appname = QApplication::applicationName();        // 获取应用名称
+    QSettings config(AUTO_RUN_KEY, QSettings::NativeFormat);  // 创建QSetting, 需要添加QSetting头文件
+
+    if(checked)
+    {
+        QString apppath = QApplication::applicationFilePath(); // 找到应用的目录
+        config.setValue(appname, apppath.replace("/", "\\"));  // 写入注册表
+    }
+    else
+    {
+        config.remove(appname);                                // 从注册表中删除
+    }
+}
+
 void MainWindow::on_PB_timer_toggled(bool checked)
 {
     if(checked) timer->start(TIMEOUT);
@@ -402,4 +452,5 @@ void MainWindow::on_PB_github_clicked()
 {
     const QUrl url("https://github.com/AkntRedMH/VideoWallpaper");
     QDesktopServices::openUrl(url);
+    this->hide();
 }

@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
+
     // 避免重复启动
     QString tmpDir = QDir::tempPath();
     QString lockFilePath = tmpDir + "/MyUniqueApplication.lock";
@@ -27,7 +29,7 @@ int main(int argc, char *argv[])
     a.setWindowIcon(QIcon(":/icons/app"));
 
     MainWindow w;
-    w.show();
+//    w.show();
 
     return a.exec();
 }
