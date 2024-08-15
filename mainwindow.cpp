@@ -84,6 +84,8 @@ void MainWindow::SetConfig()
     config.setValue("alwaysondisplay", ui->PB_alwaysondisplay->isChecked());
 
     config.setValue("displayoffstop", ui->PB_displayoffstop->isChecked());
+
+    config.setValue("batterypause", ui->PB_batterypause->isChecked());
 }
 
 void MainWindow::GetConfig()
@@ -145,15 +147,8 @@ void MainWindow::GetConfig()
     temp = filepathsbackup.indexOf(path);
     if(temp!=-1) videowindow->SetPlayIndex(temp);
 
-    // 设置定时器
-    if(config.value("occupied", true).toBool())
-    {
-        ui->PB_occupied->setChecked(true);
-    }
-    else
-    {
-        ui->PB_occupied->setChecked(false);
-    }
+    if(config.value("occupied", true).toBool()) ui->PB_occupied->setChecked(true);
+    else ui->PB_occupied->setChecked(false);
 
     if(config.value("startup", false).toBool()) ui->PB_startup->setChecked(true);
     else ui->PB_startup->setChecked(false);
@@ -186,11 +181,11 @@ void MainWindow::GetConfig()
     }
     else ui->PB_alwaysondisplay->setChecked(false);
 
-    if(config.value("displayoffstop", false).toBool())
-    {
-        ui->PB_displayoffstop->setChecked(true);
-    }
+    if(config.value("displayoffstop", true).toBool()) ui->PB_displayoffstop->setChecked(true);
     else ui->PB_displayoffstop->setChecked(false);
+
+    if(config.value("batterypause", true).toBool()) ui->PB_batterypause->setChecked(true);
+    else ui->PB_batterypause->setChecked(false);
 }
 
 void MainWindow::SetSystemTray()
@@ -333,7 +328,7 @@ void MainWindow::onTimeOut()
             GetDevicePowerState(hDevice, &pfon);
             if(!pfon)
             {
-                timeout_playstate = true;
+                timeout_playstate = true; // 这里借用上段逻辑
                 on_PB_stop_clicked();
             }
         }
