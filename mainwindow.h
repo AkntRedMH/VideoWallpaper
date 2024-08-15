@@ -31,7 +31,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    bool timeout_invisible = false; // 是否有其他程序全屏或最大化
+    bool timeout_occupied = false; // 是否有其他程序全屏或最大化
 
 private:
     Ui::MainWindow *ui;
@@ -47,6 +47,7 @@ private:
     QAction *quit;
     QTimer *timer;
     bool timeout_playstate = false;
+    HANDLE hDevice;
 
     void SetConfig();
     void GetConfig();
@@ -72,10 +73,7 @@ private slots:
     void on_CB_fit_currentIndexChanged(int index);
     void on_HS_rate_valueChanged(int value);
     void on_PB_startup_toggled(bool checked);
-    void on_PB_occupied_toggled(bool checked);
-    void on_PB_displayoffstop_toggled(bool checked);
     void on_PB_alwaysondisplay_toggled(bool checked);
-    void on_PB_batterypause_toggled(bool checked);
     void on_PB_github_clicked();
 };
 #endif // MAINWINDOW_H

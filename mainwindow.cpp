@@ -22,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
     // 启动一个检测其他程序全屏或最大化的定时器
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::onTimeOut);
+    timer->start(TIMEOUT);
+
+    // 获取显示屏句柄
+    hDevice = CreateFile(TEXT("\\\\.\\LCD"), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
     // 软件退出时保存设置
     connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::SetConfig);
@@ -78,6 +82,8 @@ void MainWindow::SetConfig()
     config.setValue("autoplay", ui->PB_autoplay->isChecked());
 
     config.setValue("alwaysondisplay", ui->PB_alwaysondisplay->isChecked());
+
+    config.setValue("displayoffstop", ui->PB_displayoffstop->isChecked());
 }
 
 void MainWindow::GetConfig()
@@ -142,7 +148,6 @@ void MainWindow::GetConfig()
     // 设置定时器
     if(config.value("occupied", true).toBool())
     {
-        timer->start(TIMEOUT);
         ui->PB_occupied->setChecked(true);
     }
     else
@@ -180,6 +185,12 @@ void MainWindow::GetConfig()
         ui->PB_alwaysondisplay->setChecked(true);
     }
     else ui->PB_alwaysondisplay->setChecked(false);
+
+    if(config.value("displayoffstop", false).toBool())
+    {
+        ui->PB_displayoffstop->setChecked(true);
+    }
+    else ui->PB_displayoffstop->setChecked(false);
 }
 
 void MainWindow::SetSystemTray()
@@ -270,45 +281,75 @@ BOOL CALLBACK EnumWindowsProc_TimeOut(_In_ HWND hwnd, _In_ LPARAM Lparam)
     // 检测是否有其他程序最大化
     if(IsZoomed(hwnd) && IsWindowVisible(hwnd))
     {
-        pthis->timeout_invisible = true;
+        pthis->timeout_occupied = true;
         return FALSE;
     }
 
-    pthis->timeout_invisible = false;
+    pthis->timeout_occupied = false;
     return TRUE;
 }
 
 void MainWindow::onTimeOut()
 {
-    EnumWindows(EnumWindowsProc_TimeOut, reinterpret_cast<LPARAM>(this));
-
-    // 检测是否有其他程序全屏
-    QUERY_USER_NOTIFICATION_STATE pquns;
-    HRESULT hr = SHQueryUserNotificationState(&pquns);
-    if(SUCCEEDED(hr))
+    if(videowindow->GetVideoState()!=StoppedState && ui->PB_occupied->isChecked())
     {
-        switch(pquns)
+        EnumWindows(EnumWindowsProc_TimeOut, reinterpret_cast<LPARAM>(this));
+
+        // 检测是否有其他程序全屏
+        QUERY_USER_NOTIFICATION_STATE pquns;
+        HRESULT hr = SHQueryUserNotificationState(&pquns);
+        if(SUCCEEDED(hr))
         {
-            case QUNS_BUSY:
-                timeout_invisible = true;
-                break;
-            case QUNS_RUNNING_D3D_FULL_SCREEN:
-                timeout_invisible = true;
-                break;
-            default:
-                break;
+            switch(pquns)
+            {
+                case QUNS_BUSY:
+                    timeout_occupied = true;
+                    break;
+                case QUNS_RUNNING_D3D_FULL_SCREEN:
+                    timeout_occupied = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    if(this->timeout_invisible && videowindow->GetVideoState()==PlayingState)
+    if(this->timeout_occupied && videowindow->GetVideoState()==PlayingState)
     {
         timeout_playstate = true;
         on_PB_play_clicked();
     }
-    else if(!this->timeout_invisible && timeout_playstate)
+    else if(!this->timeout_occupied && timeout_playstate)
     {
         timeout_playstate = false;
         on_PB_play_clicked();
+    }
+//------------------------------------------------------------------------------------------------------------
+    if (videowindow->GetVideoState()==PlayingState && ui->PB_displayoffstop->isChecked())
+    {
+        if(hDevice != INVALID_HANDLE_VALUE)
+        {
+            BOOL pfon;
+            GetDevicePowerState(hDevice, &pfon);
+            if(!pfon)
+            {
+                timeout_playstate = true;
+                on_PB_stop_clicked();
+            }
+        }
+    }
+//-----------------------------------------------------------------------------------------------------------
+    if(videowindow->GetVideoState()==PlayingState && ui->PB_batterypause->isChecked())
+    {
+        SYSTEM_POWER_STATUS syspwrst;
+
+        if(GetSystemPowerStatus(&syspwrst))
+        {
+            if(syspwrst.ACLineStatus==AC_LINE_OFFLINE)
+            {
+                on_PB_play_clicked();
+            }
+        }
     }
 }
 
@@ -458,32 +499,10 @@ void MainWindow::on_PB_startup_toggled(bool checked)
     }
 }
 
-void MainWindow::on_PB_occupied_toggled(bool checked)
-{
-    /*如果要加入熄屏停止和电池时暂停，这里与相关的地方可能需要把直接控制定时器改成控制标志位*/
-    if(checked) timer->start(TIMEOUT);
-    else timer->stop();
-}
-
-void MainWindow::on_PB_displayoffstop_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-
-//    GetDevicePowerState();
-}
-
 void MainWindow::on_PB_alwaysondisplay_toggled(bool checked)
 {
     if(checked) SetThreadExecutionState(ES_CONTINUOUS|ES_DISPLAY_REQUIRED|ES_SYSTEM_REQUIRED);
     else SetThreadExecutionState(ES_CONTINUOUS);
-}
-
-void MainWindow::on_PB_batterypause_toggled(bool checked)
-{
-    Q_UNUSED(checked);
-
-//    SYSTEM_POWER_STATUS syspwrst;
-//    GetSystemPowerStatus(&syspwrst);
 }
 
 void MainWindow::on_PB_github_clicked()

@@ -340,7 +340,7 @@
          <item>
           <widget class="QPushButton" name="PB_displayoffstop">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -352,6 +352,9 @@
             <string>熄屏停止</string>
            </property>
            <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
             <bool>true</bool>
            </property>
           </widget>
@@ -375,7 +378,7 @@
          <item>
           <widget class="QPushButton" name="PB_batterypause">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
