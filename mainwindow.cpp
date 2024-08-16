@@ -502,7 +502,7 @@ void MainWindow::on_PB_alwaysondisplay_toggled(bool checked)
 
 void MainWindow::on_PB_github_clicked()
 {
-    const QUrl url("https://github.com/redmh-akamk/VideoWallpaper");
+    const QUrl url("https://github.com/redmh-gh/VideoWallpaper");
     QDesktopServices::openUrl(url);
     this->hide();
 }
